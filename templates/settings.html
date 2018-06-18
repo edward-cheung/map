@@ -1,0 +1,211 @@
+<!-- settings.html -->
+{% extends 'base.html' %}
+
+{% load static %}
+{% block css_js %}
+    <link href="{% static "css/bootstrap-switch.min.css" %}" rel="stylesheet" type="text/css"/>
+    <script src="{% static "js/bootstrap-switch.min.js" %}"></script>
+{% endblock %}
+
+{% block title %}个人设置{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+
+            <!-- Nav tabs -->
+            <div class="col-lg-2" style="margin-left:-435px;">
+                <ul class="nav nav-pills nav-stacked" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#d1" aria-controls="d1" role="tab" data-toggle="tab">账户设置</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#d2" aria-controls="d2" role="tab" data-toggle="tab">消息设置</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Tab panes -->
+            <div class="col-lg-10 tab-content">
+
+                <div role="tabpanel" class="tab-pane active" id="d1">
+                    <div class="panel panel-default" style="padding: 20px;">
+                        <form class="form-horizontal" action="#" method="post">
+                            {% if message %}
+                                <div class="alert alert-danger alert-dismissible col-lg-offset-2 col-lg-8" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                                    <strong>Warning：</strong> {{ message }}
+                                </div>
+                            {% endif %}
+
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <h5 class="col-lg-10">
+                                    {% if request.session.user_province == request.session.user_city %}
+                                        &nbsp;&nbsp;当前居住地：{{ request.session.user_city }}
+                                    {% else %}
+                                        当前居住地：{{ request.session.user_province }} - {{ request.session.user_city }}
+                                    {% endif %}
+                                </h5>
+                                <div class="col-lg-2">
+                                    <button class="btn btn-primary" role="button" data-toggle="collapse"
+                                            href="#collapseExample" aria-expanded="false"
+                                            aria-controls="collapseExample">修改
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group collapse" id="collapseExample">
+                                <label for="province" class="control-label col-lg-1">省份:</label>
+                                <div class="col-lg-4">
+                                    <select name="province" id="province" class="form-control">
+                                        <option value="请选择城市">请选择省份</option>
+                                    </select>
+                                </div>
+                                <label for="city" class="control-label col-lg-1">城市：</label>
+                                <div class="col-lg-4">
+                                    <select name="city" id="city" class="form-control">
+                                        <option value="请选择城市">请选择城市</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2">
+                                    <button type="submit" class="btn btn-primary">保存</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="d2">
+                    <div class="panel panel-default" style="padding: 20px;">
+                        <form class="form-horizontal" action="#" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <h5 class="col-lg-10">是否允许接收系统消息</h5>
+                                <div class="switch col-lg-2">
+                                    <input id="mySwitch" type="checkbox" checked />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script type="application/javascript">
+        $(document).ready(function () {
+            $("#mySwitch").bootstrapSwitch({
+                onText: '是',
+                offText: '否'
+            });
+        });
+
+        var objprovince = document.getElementById("province");
+        var objcity = document.getElementById("city");
+
+        var parray = Array(
+            "北京",
+            "上海",
+            "天津",
+            "重庆",
+            "河北",
+            "山西",
+            "内蒙古",
+            "辽宁",
+            "吉林",
+            "黑龙江",
+            "江苏",
+            "浙江",
+            "安徽",
+            "福建",
+            "江西",
+            "山东",
+            "河南",
+            "湖北",
+            "湖南",
+            "广东",
+            "广西",
+            "海南",
+            "四川",
+            "贵州",
+            "云南",
+            "西藏",
+            "陕西",
+            "甘肃",
+            "宁夏",
+            "青海",
+            "新疆",
+            "香港",
+            "澳门",
+            "台湾"
+        );
+
+        var carray = Array(
+            "北京",
+            "上海",
+            "天津",
+            "重庆",
+            "石家庄,邯郸,邢台,保定,张家口,承德,廊坊,唐山,秦皇岛,沧州,衡水",
+            "太原,大同,阳泉,长治,晋城,朔州,吕梁,忻州,晋中,临汾,运城",
+            "呼和浩特,包头,乌海,赤峰,呼伦贝尔盟,阿拉善盟,哲里木盟,兴安盟,乌兰察布盟,锡林郭勒盟,巴彦淖尔盟,伊克昭盟",
+            "沈阳,大连,鞍山,抚顺,本溪,丹东,锦州,营口,阜新,辽阳,盘锦,铁岭,朝阳,葫芦岛",
+            "长春,吉林,四平,辽源,通化,白山,松原,白城,延边",
+            "哈尔滨,齐齐哈尔,牡丹江,佳木斯,大庆,绥化,鹤岗,鸡西,黑河,双鸭山,伊春,七台河,大兴安岭",
+            "南京,镇江,苏州,南通,扬州,盐城,徐州,连云港,常州,无锡,宿迁,泰州,淮安",
+            "杭州,宁波,温州,嘉兴,湖州,绍兴,金华,衢州,舟山,台州,丽水",
+            "合肥,芜湖,蚌埠,马鞍山,淮北,铜陵,安庆,黄山,滁州,宿州,池州,淮南,巢湖,阜阳,六安,宣城,亳州",
+            "福州,厦门,莆田,三明,泉州,漳州,南平,龙岩,宁德",
+            "南昌市,景德镇,九江,鹰潭,萍乡,新馀,赣州,吉安,宜春,抚州,上饶",
+            "济南,青岛,淄博,枣庄,东营,烟台,潍坊,济宁,泰安,威海,日照,莱芜,临沂,德州,聊城,滨州,菏泽,博兴",
+            "郑州,开封,洛阳,平顶山,安阳,鹤壁,新乡,焦作,濮阳,许昌,漯河,三门峡,南阳,商丘,信阳,周口,驻马店,济源",
+            "武汉,宜昌,荆州,襄樊,黄石,荆门,黄冈,十堰,恩施,潜江,天门,仙桃,随州,咸宁,孝感,鄂州",
+            "长沙,常德,株洲,湘潭,衡阳,岳阳,邵阳,益阳,娄底,怀化,郴州,永州,湘西,张家界",
+            "广州,深圳,珠海,汕头,东莞,中山,佛山,韶关,江门,湛江,茂名,肇庆,惠州,梅州,汕尾,河源,阳江,清远,潮州,揭阳,云浮",
+            "南宁,柳州,桂林,梧州,北海,防城港,钦州,贵港,玉林,南宁地区,柳州地区,贺州,百色,河池",
+            "海口,三亚",
+            "成都,绵阳,德阳,自贡,攀枝花,广元,内江,乐山,南充,宜宾,广安,达川,雅安,眉山,甘孜,凉山,泸州",
+            "贵阳,六盘水,遵义,安顺,铜仁,黔西南,毕节,黔东南,黔南",
+            "昆明,大理,曲靖,玉溪,昭通,楚雄,红河,文山,思茅,西双版纳,保山,德宏,丽江,怒江,迪庆,临沧",
+            "拉萨,日喀则,山南,林芝,昌都,阿里,那曲",
+            "西安,宝鸡,咸阳,铜川,渭南,延安,榆林,汉中,安康,商洛",
+            "兰州,嘉峪关,金昌,白银,天水,酒泉,张掖,武威,定西,陇南,平凉,庆阳,临夏,甘南",
+            "银川,石嘴山,吴忠,固原",
+            "西宁,海东,海南,海北,黄南,玉树,果洛,海西",
+            "乌鲁木齐,石河子,克拉玛依,伊犁,巴音郭勒,昌吉,克孜勒苏柯尔克孜,博 尔塔拉,吐鲁番,哈密,喀什,和田,阿克苏",
+            "香港",
+            "澳门",
+            "台北,高雄,台中,台南,屏东,南投,云林,新竹,彰化,苗栗,嘉义,花莲,桃园,宜兰,基隆,台东,金门,马祖,澎湖"
+        );
+        objprovince.onchange = function GetCity() {
+            var x = this.selectedIndex - 1;
+            for (var i = 0; i < objcity.length; i++) {
+                objcity.remove(i);
+            }
+
+            if (x >= 0) {
+                var citylist = carray[x].split(',');
+
+                for (i = 0; i < citylist.length; i++) {
+                    objcity.options[i] = new Option(citylist[i], citylist[i]);
+                }
+            } else {
+                objcity.options[0] = new Option("请选择城市", "请选择城市");
+            }
+        };
+
+        function GetProvince() {
+            objprovince.options[0] = new Option("请选择省份", "请选择省份");
+            for (var i = 0; i < parray.length; i++) {
+                objprovince.options[i + 1] = new Option(parray[i], parray[i]);
+            }
+        }
+
+        window.onload = GetProvince();
+
+    </script>
+
+{% endblock %}

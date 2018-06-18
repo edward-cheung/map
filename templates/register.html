@@ -1,0 +1,58 @@
+<!-- register.html -->
+{% extends 'base.html' %}
+
+{% block title %}注册{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <form class="form-horizontal" action="#" method="post">
+
+            {% if message %}
+                <div class="alert alert-danger alert-dismissible col-lg-offset-2 col-lg-8" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <strong>Warning：</strong> {{ message }}
+                </div>
+            {% endif %}
+
+            {% csrf_token %}
+            <label class="form-horizontal-heading col-lg-offset-5" style="margin-top: 30px;">
+                <h2>Please sign up</h2>
+            </label>
+            <div class="form-group" style="margin-top: 30px;">
+                <label for="inputUsername" class="col-lg-1 col-lg-offset-2 control-label">Username:</label>
+                <div class="col-lg-7">
+                    <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username"
+                           required
+                           autofocus>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword1" class="col-lg-1 col-lg-offset-2 control-label">Password:</label>
+                <div class="col-lg-7">
+                    <input type="password" name="password1" id="inputPassword1" class="form-control"
+                           placeholder="Password"
+                           required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword2" class="col-lg-1 col-lg-offset-2 control-label">Confirm:</label>
+                <div class="col-lg-7">
+                    <input type="password" name="password2" id="inputPassword2" class="form-control"
+                           placeholder="Password again to confirm"
+                           required>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-lg-offset-2 col-lg-8">
+                    <button type="reset" class="btn btn-warning pull-left">Reset</button>
+                    <button type="submit" class="btn btn-primary pull-right">Sign up</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+{% endblock %}

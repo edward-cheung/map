@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maxInum-scale=1,use-scalable=no"/>
+
+    {% load static %}
+    <link rel="shortcut icon" href="{% static "images/favicon.ico" %}">
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet" type="text/css"/>
+    <script src="{% static "js/jquery.min.js" %}"></script>
+    <script src="{% static "js/jquery.cookie.js" %}"></script>
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+    {% block css_js %}{% endblock %}
+
+    <title>{% block title %}base{% endblock %}</title>
+
+</head>
+<body style="background-color: #F2F2F2;">
+
+<!--     顶部导航条    -->
+<nav class="navbar navbar-default" style="height:50px;margin-bottom: 0;">
+    <div class="container">
+
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">
+                    <img alt="Brand" src="{% static "./images/Map1.png" %}"/>
+                </a>
+            </div>
+
+            <form class="navbar-form navbar-left" action="/" method="get">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="t" placeholder="Search">
+                </div>
+                <button type="submit" class="btn btn-default">Search</button>
+            </form>
+
+            <ul class="nav navbar-nav navbar-right" style="height: 50px;">
+                <li role="presentation" id="home">
+                    <a href="/" style="height: 50px;">
+                        <p class="text-muted">
+                            <span class="glyphicon glyphicon-home" aria-hidden="true"></span> 首页
+                        </p>
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a href="#" data-toggle="modal" data-target="#topic" style="height: 49px;}">
+                        <p class="text-muted">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> 发布
+                        </p>
+                    </a>
+                </li>
+
+                {% if request.session.is_login %}
+                    <li role="presentation" class="dropdown text-center" style="max-width:120px;min-width: 100px;">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false"> {{ request.session.user_name }}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="?opt=homepage&u={{ request.session.user_name }}">我的主页</a></li>
+                            <li><a href="?opt=comments&u={{ request.session.user_name }}">我的评论</a></li>
+                            <li><a href="?opt=goods&u={{ request.session.user_name }}">我的赞</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="{% url "messages" %}">消息中心</a></li>
+                            <li><a href="{% url "settings" %}">个人设置</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="{% url "logout" %}">退 出</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li role="presentation"><a href="/login/">登录</a></li>
+                    <li role="presentation"><a href="/register/">注册</a></li>
+                {% endif %}
+            </ul>
+
+    </div>
+</nav>
+
+<!--     模态框    -->
+<div class="modal fade" id="topic" tabindex="-1" role="dialog" aria-labelledby="topic_title">
+    <div class="modal-dialog" role="document" aria-hidden="true">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="topic_title">有什么新鲜事想告诉大家?</h4>
+            </div>
+
+            <div class="modal-body">
+                <form id="topic_form" enctype="multipart/form-data">
+
+                    <div class="alert alert-warning alert-dismissible" role="alert" id="topic_message"
+                         style="display: none;">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <strong>Warning!</strong>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="topic_tag" class="control-label">Tag:</label>
+                        <input type="text" class="form-control" id="topic_tag" placeholder="标签">
+                        <p class="help-block"> 注意：多个标签之间以空格隔开</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="topic_text" class="control-label">Topic text:</label>
+                        <textarea class="form-control" id="topic_text" rows="3" placeholder="文本内容100字以内..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="topic_images" class="control-label">Topic images:</label>
+                        <input type="file" id="topic_images" multiple="multiple"
+                               accept="image/gif, image/jpeg, image/png, image/jpg">
+                        <span id="helpBlock" class="help-block">Example block-level help text here.</span>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" id="topic_ok">OK</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    if (window.location.pathname === '/') {
+        $('#home').addClass('active');
+    }
+    else {
+        $('#home').removeClass('active');
+    }
+
+    $('#topic').on('shown.bs.modal', function () {
+        $('#topic_tag').focus();
+    });
+
+    $("#topic_ok").click(function () {
+        var form_data = new FormData();
+        form_data.append('topic_tag', $("#topic_tag").val());
+        form_data.append('topic_text', $("#topic_text").val());
+        var images = $("#topic_images")[0].files;
+        for (var i = 0; i < images.length; i++) {
+            form_data.append('topic_images', images[i]);
+        }
+        $.ajax({
+            url: '/issue/',    //这里是视图函数处理数据的路径，是这个def login（request）函数在处理
+            type: 'POST',
+            headers: {"X-CSRFToken": $.cookie('csrftoken')}, //发起的是post请求所以要加csrftoken，需要引入jquerycookie,目的就是声明下，可以通过django中间件的验证机制
+            data: form_data,
+            processData: false,
+            contentType: false,    //必须false才会自动加上正确的Content-Type
+
+            success: function (data) {
+                var dat = JSON.parse(data);
+                if (dat.flag) {
+                    $('#topic').modal('hide');
+                    window.location.href = "/";
+                }
+                else {
+                    $('#topic_message').attr('style', '')
+                    console.log(dat);
+                }
+            }, //以上是后端函数返回成功的信息
+
+            error: function () {   //请求失败处理函数
+                console.log("jq error");
+            },
+
+            complete: function () {
+                console.log("jq complete");
+            },
+
+            beforeSend: function () {
+                console.log("jq beforeSend");
+            },
+        });
+    });
+
+    $('#topic').on('hide.bs.modal', function () {
+        $('#topic_message').attr('style', 'display:none');
+        $('#topic_form')[0].reset();
+    });
+
+</script>
+
+<!--     主体    -->
+{% block content %}
+
+{% endblock %}
+
+</body>
+
+</html>
